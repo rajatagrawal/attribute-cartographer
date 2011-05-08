@@ -1,0 +1,38 @@
+= Attribute Cartographer
+
+* http://github.com/krishicks/attribute-cartographer
+
+== DESCRIPTION
+
+Attribute Cartographer allows you to map an attributes hash into similarly or differently named methods, using an optional block to map the values as well.
+
+== INSTALL
+
+Add attribute-cartography to your Gemfile
+
+  gem 'attribute-cartographer'
+
+Then run:
+
+  $ bundle
+
+== USAGE
+  class Mapper
+    include AttributeCartographer
+
+    map :a, :b
+    map :c, :d, ->(v) { v.downcase }
+  end
+
+  account = Mapper.new a: 123, c: "Mapper"
+  account.b # => 123
+  account.d # => "Mapper"
+  account.original_attributes # => { a: 123, c: "Mapper" }
+
+== REQUIREMENTS
+
+* Ruby 1.9.x
+
+== LICENSE
+
+MIT
