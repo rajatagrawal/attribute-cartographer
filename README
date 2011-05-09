@@ -22,9 +22,10 @@ Then run:
 
     map :a, :b
     map :c, :d, ->(v) { v.downcase }
+    map [:e, :f, :g]
   end
 
-  account = Mapper.new a: 123, c: "Mapper"
+  account = Mapper.new a: 123, c: "Mapper", e: "Eee!", f: "F.", g: "Gee!"
   account.b # => 123
   account.d # => "Mapper"
   account.original_attributes # => { a: 123, c: "Mapper" }
