@@ -29,10 +29,13 @@ module AttributeCartographer
   module InstanceMethods
     def initialize attributes
       @_original_attributes = attributes
+      @_mapped_attributes = {}
+
       mapper = self.class.instance_variable_get(:@mapper)
 
       mapper.each { |from, (meth, block)|
         value = attributes.has_key?(from) ? block.call(attributes[from]) : nil
+        @_mapped_attributes.merge! meth => value
         self.send :define_singleton_method, meth, ->{ value }
       } if mapper
 
@@ -41,6 +44,10 @@ module AttributeCartographer
 
     def original_attributes
       @_original_attributes
+    end
+
+    def mapped_attributes
+      @_mapped_attributes
     end
   end
 end

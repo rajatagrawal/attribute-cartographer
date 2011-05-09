@@ -33,6 +33,14 @@ describe AttributeCartographer do
     end
   end
 
+  describe "#mapped_attributes" do
+    before { klass.map :a, :b, ->(v) { v + 1 } }
+
+    it "returns any attributes mapped by the mapper" do
+      klass.new(a: 1).mapped_attributes.should == { b: 2 }
+    end
+  end
+
   describe ".map" do
     context "with a single argument given" do
       before { klass.map :a }
