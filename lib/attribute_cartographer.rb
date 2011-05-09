@@ -1,5 +1,4 @@
 module AttributeCartographer
-  class InvalidBlockArityError < StandardError; end
   class InvalidArgumentError < StandardError; end
 
   class << self
