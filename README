@@ -25,10 +25,10 @@ Then run:
     map [:e, :f, :g]
   end
 
-  account = Mapper.new a: 123, c: "Mapper", e: "Eee!", f: "F.", g: "Gee!"
-  account.b # => 123
-  account.d # => "mapper"
-  account.original_attributes # => {:a=>123, :c=>"Mapper", :e=>"Eee!", :f=>"F.", :g=>"Gee!"}
+  mapper = Mapper.new a: 123, c: "Mapper", e: "Eee!", f: "F.", g: "Gee!"
+  mapper.b # => 123
+  mapper.d # => "mapper"
+  mapper.original_attributes # => {:a=>123, :c=>"Mapper", :e=>"Eee!", :f=>"F.", :g=>"Gee!"}
 
 == REQUIREMENTS
 
