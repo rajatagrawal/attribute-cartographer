@@ -18,7 +18,6 @@ describe AttributeCartographer do
       end
     end
 
-
     context "with attributes that don't match mapped values" do
       before { klass.map :a, :b, ->(v) { v + 1 } }
 
@@ -35,7 +34,6 @@ describe AttributeCartographer do
   end
 
   describe ".map" do
-    # tests about accepting strings or keys as both args
     context "with a single argument given" do
       before { klass.map :a }
 
@@ -61,7 +59,6 @@ describe AttributeCartographer do
         instance.b.should == :b_value
       end
 
-      # option to throw error if all keys not present in passed in attributes?
       it "makes nil methods for mapped keys which had no attributes passed in for them" do
         instance = klass.new(a: :a_value)
         instance.b.should == nil
