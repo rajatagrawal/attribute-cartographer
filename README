@@ -27,8 +27,8 @@ Then run:
 
   account = Mapper.new a: 123, c: "Mapper", e: "Eee!", f: "F.", g: "Gee!"
   account.b # => 123
-  account.d # => "Mapper"
-  account.original_attributes # => { a: 123, c: "Mapper" }
+  account.d # => "mapper"
+  account.original_attributes # => {:a=>123, :c=>"Mapper", :e=>"Eee!", :f=>"F.", :g=>"Gee!"}
 
 == REQUIREMENTS
 
