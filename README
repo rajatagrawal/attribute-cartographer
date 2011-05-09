@@ -8,7 +8,7 @@ Attribute Cartographer allows you to map an attributes hash into similarly or di
 
 == INSTALL
 
-Add attribute-cartography to your Gemfile
+Add attribute-cartographer to your Gemfile
 
   gem 'attribute-cartographer'
 
