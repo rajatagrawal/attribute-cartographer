@@ -18,12 +18,10 @@ module AttributeCartographer
       if Array === args.first
         raise AttributeCartographer::InvalidArgumentError if args.first.empty?
         args.first.each { |arg| @mapper.merge! arg => [arg, block] }
-      elsif args.size == 2
+      else
         from, to = args
+        to = from unless to
         @mapper.merge! from => [to, block]
-      elsif args.size == 1
-        from = args.pop
-        @mapper.merge! from => [from, block]
       end
     end
   end
