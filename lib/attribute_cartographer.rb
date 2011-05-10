@@ -11,17 +11,19 @@ module AttributeCartographer
   module ClassMethods
     def map *args
       @mapper ||= {}
-      block = (Proc === args.last) ? args.pop : ->(v) { v }
 
-      raise AttributeCartographer::InvalidArgumentError if block.arity > 1
+      (from, to), (f1, f2) = args.partition { |a| !(Proc === a) }
 
-      if Array === args.first
-        raise AttributeCartographer::InvalidArgumentError if args.first.empty?
-        args.first.each { |arg| @mapper.merge! arg => [arg, block] }
+      raise AttributeCartographer::InvalidArgumentError if [f1,f2].compact.any? { |f| f.arity > 1 }
+
+      f1 ||= ->(v) { v }
+      to ||= from
+
+      if Array === from
+        from.each { |key| @mapper.merge! key => [key, f1] }
       else
-        from, to = args
-        to = from unless to
-        @mapper.merge! from => [to, block]
+        @mapper.merge! from => [to, f1]
+        @mapper.merge! to => [from, f2] if f2
       end
     end
   end

@@ -20,15 +20,26 @@ Then run:
   class Mapper
     include AttributeCartographer
 
-    map :a, :b
-    map :c, :d, ->(v) { v.downcase }
-    map [:e, :f, :g]
+    map :a
+    map :b, ->(v) { v.downcase }
+
+    map :c, :d
+    map :e, :f, ->(v) { v.downcase }
+    map :g, :h, ->(v) { v.downcase }, ->(v) { v.upcase }
+
+    map [:i, :j, :k]
+    map [:l, :m, :n], ->(v) { v.upcase }
   end
 
-  mapper = Mapper.new a: 123, c: "Mapper", e: "Eee!", f: "F.", g: "Gee!"
-  mapper.b # => 123
-  mapper.d # => "mapper"
-  mapper.original_attributes # => {:a=>123, :c=>"Mapper", :e=>"Eee!", :f=>"F.", :g=>"Gee!"}
+  mapper = Mapper.new { a: 2, b: "STRING" }
+
+  For each mapping defined, an instance method is created for the key
+  to map to with the optional lambda having been called with the original value.
+  If an optional second lambda is provided, that will be used to do the reverse mapping.
+  The second lambda is only able to be passed when the key is being mapped to a new key.
+
+  Mapper#original_attributes is the original hash passed in
+  Mapper#mapped_attributes is a hash representing the mapped keys and their mapped values
 
 == REQUIREMENTS
 
