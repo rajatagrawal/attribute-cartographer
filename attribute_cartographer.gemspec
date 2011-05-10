@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email       = ["krishicks@gmail.com"]
   s.homepage    = "https://github.com/krishicks/attribute-cartographer"
   s.summary     = %q{Map an attributes hash to methods on Ruby object while transforming the values to suit.}
-  s.description = %q{AttributeCartographer allows you to map an attributes hash into similarly or differently named methods, using an optional block to map the values as well.}
+  s.description = %q{AttributeCartographer allows you to map an attributes hash into similarly or differently named methods, using an optional lambda to map the values as well.}
 
   s.add_development_dependency('rspec', '>= 2.5')
 

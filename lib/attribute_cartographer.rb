@@ -51,8 +51,8 @@ module AttributeCartographer
     def map_attributes! attributes
       mapper = self.class.instance_variable_get(:@mapper)
 
-      mapper.each { |original_key, (mapped_key, block)|
-        value = attributes.has_key?(original_key) ? block.call(attributes[original_key]) : nil
+      mapper.each { |original_key, (mapped_key, f)|
+        value = attributes.has_key?(original_key) ? f.call(attributes[original_key]) : nil
         self.send :define_singleton_method, mapped_key, ->{ value }
 
         @_mapped_attributes.merge! mapped_key => value

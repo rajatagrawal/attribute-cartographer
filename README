@@ -4,7 +4,7 @@
 
 == DESCRIPTION
 
-Attribute Cartographer allows you to map an attributes hash into similarly or differently named methods, using an optional block to map the values as well.
+Attribute Cartographer allows you to map an attributes hash into similarly or differently named methods, using an optional lambda to map the values as well.
 
 == INSTALL
 
