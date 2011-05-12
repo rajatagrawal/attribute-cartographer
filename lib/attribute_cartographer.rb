@@ -14,16 +14,20 @@ module AttributeCartographer
 
       (from, to), (f1, f2) = args.partition { |a| !(Proc === a) }
 
-      raise AttributeCartographer::InvalidArgumentError if [f1,f2].compact.any? { |f| f.arity > 1 }
-
       f1 ||= ->(v) { v }
-      to ||= from
 
       if Array === from
-        from.each { |key| @mapper.merge! key => [key, f1] }
+        if f1.arity == 1
+          from.each { |k| @mapper[k] = [k, f1] }
+        else
+          from.each { |k| @mapper[k] = f1 }
+        end
       else
-        @mapper.merge! from => [to, f1]
-        @mapper.merge! to => [from, f2] if f2
+        raise AttributeCartographer::InvalidArgumentError if to && f1.arity == 2
+
+        to ||= from
+        @mapper[from] = (f1.arity == 1 ? [to, f1] : f1)
+        @mapper[to] = [from, f2] if f2
       end
     end
   end
@@ -50,13 +54,21 @@ module AttributeCartographer
 
     def map_attributes! attributes
       mapper = self.class.instance_variable_get(:@mapper)
+      return unless mapper
 
-      mapper.each { |original_key, (mapped_key, f)|
-        value = attributes.has_key?(original_key) ? f.call(attributes[original_key]) : nil
+      mapper.each { |original_key, mapping|
+        if Array === mapping
+          mapped_key, f = mapping
+          value = attributes.has_key?(original_key) ? f.call(attributes[original_key]) : nil
+        else
+          if attributes.has_key?(original_key)
+            mapped_key, value = mapping.call(original_key, attributes[original_key])
+          end
+        end
+
         self.send :define_singleton_method, mapped_key, ->{ value }
-
-        @_mapped_attributes.merge! mapped_key => value
-      } if mapper
+        @_mapped_attributes[mapped_key] = value
+      }
     end
   end
 end

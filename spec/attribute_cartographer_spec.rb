@@ -51,11 +51,19 @@ describe AttributeCartographer do
         end
       end
 
-      context "and a lambda" do
+      context "and a 1-arity lambda" do
         before { klass.map :a, ->(v) { v.downcase } }
 
         it "creates an instance method matching the key name, mapping the value with the lambda" do
           klass.new(:a => "STRING").a.should == "string"
+        end
+      end
+
+      context "and a 2-arity lambda" do
+        before { klass.map :A, ->(k,v) { [k.downcase, v.downcase] } }
+
+        it "maps the key and value using the lambda and creates an instance method accordingly" do
+          klass.new(A: "STRING").a.should == "string"
         end
       end
     end
@@ -112,13 +120,23 @@ describe AttributeCartographer do
         end
       end
 
-      context "and a lambda" do
+      context "and a 1-arity lambda" do
         before { klass.map [:a, :b], ->(v) { v.downcase } }
 
         it "creates a method named for each key using the lambda to map the values" do
           instance = klass.new(a: "STRING1", b: "STRING2")
           instance.a.should == "string1"
           instance.b.should == "string2"
+        end
+      end
+
+      context "and a 2-arity lambda" do
+        before { klass.map [:A, :B], ->(k,v) { [k.downcase, v.downcase] } }
+
+        it "maps the key and value using the lambda and creates an instance method accordingly" do
+          instance = klass.new(A: "ASTRING", B: "BSTRING")
+          instance.a.should == "astring"
+          instance.b.should == "bstring"
         end
       end
     end
