@@ -21,8 +21,8 @@ describe AttributeCartographer do
     context "with attributes that don't match mapped values" do
       before { klass.map :a, :b, ->(v) { v + 1 } }
 
-      it "maps attributes to nil when no mappable attribute was passed in" do
-        klass.new(c: :d).b.should be_nil
+      it "doesn't map attributes when no mappable attribute was passed in" do
+        lambda { klass.new(c: :d).b }.should raise_error(NoMethodError)
       end
     end
   end
@@ -64,6 +64,10 @@ describe AttributeCartographer do
 
         it "maps the key and value using the lambda and creates an instance method accordingly" do
           klass.new(A: "STRING").a.should == "string"
+        end
+
+        it "doesn't raise an error when the attributes hash is missing a mapped key" do
+          lambda { klass.new(c: 2) }.should_not raise_error
         end
       end
     end
@@ -114,9 +118,8 @@ describe AttributeCartographer do
           instance.b.should == :b_value
         end
 
-        it "makes nil methods for mapped keys which had no attributes passed in for them" do
-          instance = klass.new(a: :a_value)
-          instance.b.should == nil
+        it "doesn't raise an error when the attributes hash is missing a mapped key" do
+          lambda { klass.new(a: :a_value).b }.should raise_error(NoMethodError)
         end
       end
 

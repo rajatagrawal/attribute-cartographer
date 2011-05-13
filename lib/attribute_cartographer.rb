@@ -56,19 +56,19 @@ module AttributeCartographer
       mapper = self.class.instance_variable_get(:@mapper)
       return unless mapper
 
-      mapper.each { |original_key, mapping|
+      (mapper.keys & attributes.keys).each do |key|
+        mapping = mapper[key]
+
         if Array === mapping
           mapped_key, f = mapping
-          value = attributes.has_key?(original_key) ? f.call(attributes[original_key]) : nil
+          value = f.call(attributes[key])
         else
-          if attributes.has_key?(original_key)
-            mapped_key, value = mapping.call(original_key, attributes[original_key])
-          end
+          mapped_key, value = mapping.call(key, attributes[key])
         end
 
         self.send :define_singleton_method, mapped_key, ->{ value }
         @_mapped_attributes[mapped_key] = value
-      }
+      end
     end
   end
 end
