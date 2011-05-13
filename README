@@ -33,7 +33,7 @@ Then run:
     map [:P, :Q, :R], ->(k,v) { [k.downcase, v.downcase] } # You must return a 2-arg array
   end
 
-  mapper = Mapper.new { a: 2, b: "STRING" }
+  Mapper.new(a: 2, b: "STRING")
 
   For each mapping defined, an instance method is created that returns the mapped
   value. This can be mapped directly, with a lambda to map the value or key and
