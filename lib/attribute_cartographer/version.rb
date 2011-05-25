@@ -1,3 +1,3 @@
 module AttributeCartographer
-  VERSION = "0.0.4" unless defined?(::AttributeCartographer::VERSION)
+  VERSION = "0.0.5" unless defined?(::AttributeCartographer::VERSION)
 end

@@ -20,17 +20,21 @@ Then run:
   class Mapper
     include AttributeCartographer
 
+    # one-way mapping
     map :a
-    map :b, ->(v) { v.downcase }
-    map :O, ->(k,v) { [k.downcase, v.downcase] } # You must return a 2-arg array
-
-    map :c, :d
+    map :b,     ->(v) { v.downcase }
     map :e, :f, ->(v) { v.downcase }
-    map :g, :h, ->(v) { v.downcase }, ->(v) { v.upcase }
+
+    map :O,     ->(k,v) { [k.downcase, v.downcase] }
 
     map [:i, :j, :k]
     map [:l, :m, :n], ->(v) { v.upcase }
-    map [:P, :Q, :R], ->(k,v) { [k.downcase, v.downcase] } # You must return a 2-arg array
+
+    # two-way mapping
+    map :c, :d
+    map :g, :h, ->(v) { v.downcase }, ->(v) { v.upcase }
+
+    map [:P, :Q, :R], ->(k,v) { [k.downcase, v.downcase] }
   end
 
   Mapper.new(a: 2, b: "STRING")

@@ -76,8 +76,12 @@ describe AttributeCartographer do
       context "and no lambda" do
         before { klass.map :a, :b }
 
-        it "creates an instance method matching the key name" do
-          klass.new(:a => :a_value).b.should == :a_value
+        it "maps the from to the to" do
+          klass.new(:a => :a_value).mapped_attributes[:b].should == :a_value
+        end
+
+        it "maps the to to the from" do
+          klass.new(:b => :b_value).mapped_attributes[:a].should == :b_value
         end
       end
 

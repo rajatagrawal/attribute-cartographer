@@ -14,7 +14,8 @@ module AttributeCartographer
 
       (from, to), (f1, f2) = args.partition { |a| !(Proc === a) }
 
-      f1 ||= ->(v) { v }
+      passthrough = ->(v) { v }
+      f1 ||= passthrough
 
       if Array === from
         if f1.arity == 1
@@ -27,7 +28,7 @@ module AttributeCartographer
 
         to ||= from
         @mapper[from] = (f1.arity == 1 ? [to, f1] : f1)
-        @mapper[to] = [from, f2] if f2
+        @mapper[to] = [from, (f2 ? f2 : passthrough)] if to != from
       end
     end
   end
