@@ -25,6 +25,10 @@ describe AttributeCartographer do
         lambda { klass.new(c: :d).b }.should raise_error(NoMethodError)
       end
     end
+
+    it "has a default argument" do
+      lambda { klass.new }.should_not raise_error
+    end
   end
 
   describe "#original_attributes" do

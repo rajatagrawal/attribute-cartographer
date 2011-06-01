@@ -34,7 +34,7 @@ module AttributeCartographer
   end
 
   module InstanceMethods
-    def initialize attributes
+    def initialize attributes = {}
       @_original_attributes = attributes
       @_mapped_attributes = {}
 
