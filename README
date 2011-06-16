@@ -39,14 +39,10 @@ Then run:
 
   Mapper.new(a: 2, b: "STRING")
 
-  For each mapping defined, an instance method is created that returns the mapped
-  value. This can be mapped directly, with a lambda to map the value or key and
-  value, with an explicit key mapping and lambda value mapping (with an optional
-  reverse-value map lambda), with a directly-mapped array, a directly-mapped array
-  with value mapping, or with an array with keys and values mapped with lambdas.
-
-  Mapper#original_attributes is the original hash passed in
-  Mapper#mapped_attributes is a hash representing the mapped keys and their mapped values
+  For each mapping defined, an entry in mapped_attributes will be made using the
+  logic defined in the mapping. You also get another method, original_attributes,
+  that retains the entire hash that was passed to #initialize, whether the keys
+  were mapped or not.
 
 == REQUIREMENTS
 

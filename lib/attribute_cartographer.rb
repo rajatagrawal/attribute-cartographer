@@ -67,7 +67,6 @@ module AttributeCartographer
           mapped_key, value = mapping.call(key, attributes[key])
         end
 
-        self.send :define_singleton_method, mapped_key, ->{ value }
         @_mapped_attributes[mapped_key] = value
       end
     end

@@ -12,100 +12,116 @@ describe AttributeCartographer do
   }
 
   describe "#initialize" do
-    context "with nothing mapped" do
-      it "does not try to map anything when map was not called" do
-        lambda { klass.new(a: :b) }.should_not raise_error
-      end
-    end
 
-    context "with attributes that don't match mapped values" do
-      before { klass.map :a, :b, ->(v) { v + 1 } }
 
-      it "doesn't map attributes when no mappable attribute was passed in" do
-        lambda { klass.new(c: :d).b }.should raise_error(NoMethodError)
-      end
-    end
-
-    it "has a default argument" do
+    it "doesn't require an argument" do
       lambda { klass.new }.should_not raise_error
     end
   end
 
   describe "#original_attributes" do
-    it "returns any attributes given to initialize" do
+    it "is the attributes given on initialize" do
       klass.new(a: :b).original_attributes.should == { a: :b }
     end
   end
 
   describe "#mapped_attributes" do
-    before { klass.map :a, :b, ->(v) { v + 1 } }
+    subject { klass.new(attributes).mapped_attributes }
 
-    it "returns any attributes mapped by the mapper" do
-      klass.new(a: 1).mapped_attributes.should == { b: 2 }
+    context "with no mapping" do
+      let(:attributes) { { "Attribute" => "Value" } }
+
+      it { should be_empty }
+    end
+
+    context "with a mapping" do
+      before { klass.map "Attribute", "attribute" }
+
+      context "and no attributes to map" do
+        let(:attributes) { {} }
+
+        it { should be_empty }
+      end
+
+      context "and attributes to map" do
+        let(:attributes) { { "Attribute" => "Value" } }
+
+        it { should == { "attribute" => "Value" } }
+      end
     end
   end
 
   describe ".map" do
     context "with a single argument" do
       context "and no lambda" do
-        before { klass.map :a }
+        before { klass.map "Attribute" }
 
-        it "creates an instance method matching the key name" do
-          klass.new(:a => :a_value).a.should == :a_value
+        it "creates an entry in mapped_attributes matching the key name" do
+          klass.new("Attribute" => "Value").mapped_attributes["Attribute"].should == "Value"
         end
       end
 
       context "and a 1-arity lambda" do
-        before { klass.map :a, ->(v) { v.downcase } }
+        before { klass.map "Attribute", ->(v) { v.downcase } }
 
-        it "creates an instance method matching the key name, mapping the value with the lambda" do
-          klass.new(:a => "STRING").a.should == "string"
+        it "creates an entry in mapped_attributes matching the key name, mapping the value with the lambda" do
+          klass.new("Attribute" => "Value").mapped_attributes["Attribute"].should == "value"
         end
       end
 
       context "and a 2-arity lambda" do
-        before { klass.map :A, ->(k,v) { [k.downcase, v.downcase] } }
+        before { klass.map "Attribute", ->(k,v) { [k.downcase, v.downcase] } }
 
-        it "maps the key and value using the lambda and creates an instance method accordingly" do
-          klass.new(A: "STRING").a.should == "string"
+        it "creates an entry in mapped_attributes using the lambda for the key and value" do
+          klass.new("Attribute" => "Value").mapped_attributes["attribute"].should == "value"
         end
 
         it "doesn't raise an error when the attributes hash is missing a mapped key" do
-          lambda { klass.new(c: 2) }.should_not raise_error
+          lambda { klass.new("OtherAttribute" => "OtherValue") }.should_not raise_error
         end
       end
     end
 
     context "with two arguments" do
       context "and no lambda" do
-        before { klass.map :a, :b }
+        before { klass.map "Attribute", "attribute" }
 
-        it "maps the from to the to" do
-          klass.new(:a => :a_value).mapped_attributes[:b].should == :a_value
+        context "with attributes matching the left key, passing the value through" do
+          it "maps the left key to the right key" do
+            klass.new("Attribute" => "Value").mapped_attributes["attribute"].should == "Value"
+          end
         end
 
-        it "maps the to to the from" do
-          klass.new(:b => :b_value).mapped_attributes[:a].should == :b_value
+        context "with attributes matching the right key, passing the value through" do
+          it "maps the right key to the left key" do
+            klass.new("attribute" => "Value").mapped_attributes["Attribute"].should == "Value"
+          end
         end
       end
 
       context "and a single lambda" do
-        before { klass.map :a, :b, ->(v) { v.downcase } }
+        before { klass.map "Attribute", "attribute", ->(v) { v.downcase } }
 
-        it "creates an instance method matching the key name, mapping the value with the lambda" do
-          klass.new(:a => "STRING").b.should == "string"
+        context "with attributes matching the left key" do
+          it "maps the left key to the right key using the lambda to alter the value" do
+            klass.new("Attribute" => "Value").mapped_attributes["attribute"].should == "value"
+          end
         end
       end
 
       context "and two lambdas" do
-        before { klass.map :a, :b, ->(v) { v.downcase }, ->(v) { v.upcase } }
+        before { klass.map "Attribute", "attribute", ->(v) { v.downcase }, ->(v) { v.upcase } }
 
-        it "creates an instance method matching the second key name, mapping the value with the first lambda" do
-          klass.new(a: "STRING").b.should == "string"
+        context "with attributes matching the left key" do
+          it "maps the left key to the right key, using the first lambda to map the value" do
+            klass.new("Attribute" => "Value").mapped_attributes["attribute"].should == "value"
+          end
         end
 
-        it "creates an instance method matching the first key name, mapping the value with the second lambda" do
-          klass.new(b: "string").a.should == "STRING"
+        context "with attributes matching the right key, passing the value through" do
+          it "maps the right key to the left key, using the second lambda to map the value" do
+            klass.new("attribute" => "value").mapped_attributes["Attribute"].should == "VALUE"
+          end
         end
       end
 
@@ -117,38 +133,25 @@ describe AttributeCartographer do
     end
 
     context "with an array" do
-      context "with no lambda" do
-        before { klass.map [:a, :b] }
+      let(:attributes) { { "Attribute1" => "Value1", "Attribute2" => "Value2" } }
+      subject { klass.new(attributes).mapped_attributes }
 
-        it "creates a method named for each key" do
-          instance = klass.new(a: :a_value, b: :b_value)
-          instance.a.should == :a_value
-          instance.b.should == :b_value
-        end
+      context "and no lambda" do
+        before { klass.map %w{ Attribute1 Attribute2 } }
 
-        it "doesn't raise an error when the attributes hash is missing a mapped key" do
-          lambda { klass.new(a: :a_value).b }.should raise_error(NoMethodError)
-        end
+        it { should == attributes }
       end
 
       context "and a 1-arity lambda" do
-        before { klass.map [:a, :b], ->(v) { v.downcase } }
+        before { klass.map %w{ Attribute1 Attribute2 }, ->(v) { v.downcase } }
 
-        it "creates a method named for each key using the lambda to map the values" do
-          instance = klass.new(a: "STRING1", b: "STRING2")
-          instance.a.should == "string1"
-          instance.b.should == "string2"
-        end
+        it { should == { "Attribute1" => "value1", "Attribute2" => "value2" } }
       end
 
       context "and a 2-arity lambda" do
-        before { klass.map [:A, :B], ->(k,v) { [k.downcase, v.downcase] } }
+        before { klass.map %w{ Attribute1 Attribute2 }, ->(k,v) { [k.downcase, v.downcase] } }
 
-        it "maps the key and value using the lambda and creates an instance method accordingly" do
-          instance = klass.new(A: "ASTRING", B: "BSTRING")
-          instance.a.should == "astring"
-          instance.b.should == "bstring"
-        end
+        it { should == { "attribute1" => "value1", "attribute2" => "value2" } }
       end
     end
   end
