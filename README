@@ -21,23 +21,24 @@ Then run:
     include AttributeCartographer
 
     # one-way mapping
-    map :a
-    map :b,     ->(v) { v.downcase }
-    map :e, :f, ->(v) { v.downcase }
+    map "UnchangedKey"                                                              # map a single key, value untouched
+    map %w{ UnchangedKey1 UnchangedKey2 }                                           # same as above, but for multiple in a single statement
 
-    map :O,     ->(k,v) { [k.downcase, v.downcase] }
+    map "SameKeyNewValue", ->(v) { v.downcase }                                     # maps the key, using the lambda for the value
+    map %w{ SameKeyNewValue1 SameKeyNewValue2 }, ->(v) { v.upcase }                 # same as above, but for multiple in a single statement
 
-    map [:i, :j, :k]
-    map [:l, :m, :n], ->(v) { v.upcase }
+    map "OldKey", "new_key", ->(v) { v.downcase }                                   # maps the left key to the right key, using the lambda for the value
+    map "DowncasedKeyAndValue", ->(k,v) { [k.downcase, v.downcase] }                # maps the key and value using the lambda for both
+    map %w{ NewKeyAndValue1 NewKeyAndValue2 }, ->(k,v) { [k.downcase, v.downcase] } # same as the example above, but for multiple in a single statement
 
     # two-way mapping
-    map :c, :d
-    map :g, :h, ->(v) { v.downcase }, ->(v) { v.upcase }
+    map "AnotherOldKey", "another_new_key"                                          # map the left key to the right key and vice-versa, value untouched
+    map "ThisKey", "to_this_key", ->(v) { v.downcase }, ->(v) { v.upcase }          # map the left key to the right key with the first lambda,
+                                                                                    # and the right key to the left key with the second lambda
 
-    map [:P, :Q, :R], ->(k,v) { [k.downcase, v.downcase] }
   end
 
-  Mapper.new(a: 2, b: "STRING")
+  Mapper.new("UnchangedKey" => "UnchangedValue", "OldKey" => "OldValue")            # etc. 
 
   For each mapping defined, an entry in mapped_attributes will be made using the
   logic defined in the mapping. You also get another method, original_attributes,
