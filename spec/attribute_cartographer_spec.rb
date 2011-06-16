@@ -107,6 +107,12 @@ describe AttributeCartographer do
             klass.new("Attribute" => "Value").mapped_attributes["attribute"].should == "value"
           end
         end
+
+        context "with attributes matching the right key" do
+          it "doesn't map the right key as it's a one-way mapping" do
+            klass.new("attribute" => "value").mapped_attributes["Attribute"].should be_nil
+          end
+        end
       end
 
       context "and two lambdas" do

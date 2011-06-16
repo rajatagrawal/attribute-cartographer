@@ -16,6 +16,7 @@ module AttributeCartographer
 
       passthrough = ->(v) { v }
       f1 ||= passthrough
+      f2 ||= passthrough
 
       if Array === from
         if f1.arity == 1
@@ -26,9 +27,8 @@ module AttributeCartographer
       else
         raise AttributeCartographer::InvalidArgumentError if to && f1.arity == 2
 
-        to ||= from
-        @mapper[from] = (f1.arity == 1 ? [to, f1] : f1)
-        @mapper[to] = [from, (f2 ? f2 : passthrough)] if to != from
+        @mapper[from] = (f1.arity == 1 ? [to || from, f1] : f1)
+        @mapper[to] = [from, f2] if to && (f1 == f2 || f2 != passthrough)
       end
     end
   end
