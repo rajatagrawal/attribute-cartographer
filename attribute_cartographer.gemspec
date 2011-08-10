@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.description = %q{AttributeCartographer allows you to map an attributes hash into similarly or differently named methods, using an optional lambda to map the values as well.}
 
   s.add_development_dependency('rake')
+  s.add_development_dependency('autotest')
   s.add_development_dependency('rspec', '>= 2.5')
 
   s.files         = `git ls-files`.split("\n")
