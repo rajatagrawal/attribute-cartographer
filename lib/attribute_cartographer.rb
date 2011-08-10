@@ -11,6 +11,7 @@ module AttributeCartographer
   module ClassMethods
     def map *args
       @mapper ||= {}
+      @unmapper ||= {}
 
       (from, to), (f1, f2) = args.partition { |a| !(Proc === a) }
 
@@ -28,7 +29,7 @@ module AttributeCartographer
         raise AttributeCartographer::InvalidArgumentError if to && f1.arity == 2
 
         @mapper[from] = (f1.arity == 1 ? [to || from, f1] : f1)
-        @mapper[to] = [from, f2] if to && (f1 == f2 || f2 != passthrough)
+        @unmapper[to] = [from, f2] if to && (f1 == f2 || f2 != passthrough)
       end
     end
   end
@@ -37,6 +38,7 @@ module AttributeCartographer
     def initialize attributes = {}
       @_original_attributes = attributes
       @_mapped_attributes = {}
+      @_unmapped_attributes = {}
 
       map_attributes! attributes
 
@@ -51,24 +53,34 @@ module AttributeCartographer
       @_mapped_attributes
     end
 
+    def unmapped_attributes
+      @_unmapped_attributes
+    end
+
   private
 
     def map_attributes! attributes
-      mapper = self.class.instance_variable_get(:@mapper)
-      return unless mapper
+      {
+        :@mapper => @_mapped_attributes,
+        :@unmapper => @_unmapped_attributes
+      }.each do |mapper_key, attributes_map|
+        mapper = self.class.instance_variable_get(mapper_key)
+        return unless mapper
 
-      (mapper.keys & attributes.keys).each do |key|
-        mapping = mapper[key]
+        (mapper.keys & attributes.keys).each do |key|
+          mapping = mapper[key]
 
-        if Array === mapping
-          mapped_key, f = mapping
-          value = f.call(attributes[key])
-        else
-          mapped_key, value = mapping.call(key, attributes[key])
+          if Array === mapping
+            mapped_key, f = mapping
+            value = f.call(attributes[key])
+          else
+            mapped_key, value = mapping.call(key, attributes[key])
+          end
+
+          attributes_map[mapped_key] = value
         end
-
-        @_mapped_attributes[mapped_key] = value
       end
+
     end
   end
 end

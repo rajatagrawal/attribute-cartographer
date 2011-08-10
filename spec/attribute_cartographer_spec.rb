@@ -94,7 +94,7 @@ describe AttributeCartographer do
 
         context "with attributes matching the right key, passing the value through" do
           it "maps the right key to the left key" do
-            klass.new("attribute" => "Value").mapped_attributes["Attribute"].should == "Value"
+            klass.new("attribute" => "Value").unmapped_attributes["Attribute"].should == "Value"
           end
         end
       end
@@ -126,7 +126,7 @@ describe AttributeCartographer do
 
         context "with attributes matching the right key, passing the value through" do
           it "maps the right key to the left key, using the second lambda to map the value" do
-            klass.new("attribute" => "value").mapped_attributes["Attribute"].should == "VALUE"
+            klass.new("attribute" => "value").unmapped_attributes["Attribute"].should == "VALUE"
           end
         end
       end
@@ -135,6 +135,21 @@ describe AttributeCartographer do
         it "raises an error" do
           lambda { klass.map :a, :b, ->(k,v) { v + 1 } }.should raise_error(AttributeCartographer::InvalidArgumentError)
         end
+      end
+
+      context "and two lambda where the attributes have identical values" do
+        before { klass.map "attribute", "attribute", ->(v) { v.downcase }, ->(v) { v.upcase } }
+
+        context "with attributes matching the left key" do
+          it "maps the left key to the right key, using the first lambda to map the value" do
+            klass.new("attribute" => "Value").mapped_attributes["attribute"].should == "value"
+          end
+
+          it "maps the right key to the left key, using the second lambda to map the value" do
+            klass.new("attribute" => "Value").unmapped_attributes["attribute"].should == "VALUE"
+          end
+        end
+
       end
     end
 
