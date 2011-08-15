@@ -50,11 +50,17 @@ module AttributeCartographer
     end
 
     def mapped_attributes
-      @_mapped_attributes
+      @_mapped_attributes.inject({}) do |mapping, attribute|
+        mapping[attribute[0]] = attribute[1].is_a?(Proc) ? attribute[1].call : attribute[1]
+        mapping
+      end
     end
 
     def unmapped_attributes
-      @_unmapped_attributes
+      @_unmapped_attributes.inject({}) do |mapping, attribute|
+        mapping[attribute[0]] = attribute[1].is_a?(Proc) ? attribute[1].call : attribute[1]
+        mapping
+      end
     end
 
   private
@@ -69,10 +75,9 @@ module AttributeCartographer
 
         (mapper.keys & attributes.keys).each do |key|
           mapping = mapper[key]
-
           if Array === mapping
             mapped_key, f = mapping
-            value = f.call(attributes[key])
+            value = lambda { f.call(attributes[key]) }
           else
             mapped_key, value = mapping.call(key, attributes[key])
           end

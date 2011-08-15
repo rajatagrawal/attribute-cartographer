@@ -137,7 +137,7 @@ describe AttributeCartographer do
         end
       end
 
-      context "and two lambda where the attributes have identical values" do
+      context "and two lambda where the attributes have identical keys" do
         before { klass.map "attribute", "attribute", ->(v) { v.downcase }, ->(v) { v.upcase } }
 
         context "with attributes matching the left key" do
@@ -149,7 +149,20 @@ describe AttributeCartographer do
             klass.new("attribute" => "Value").unmapped_attributes["attribute"].should == "VALUE"
           end
         end
+      end
 
+      context "and two lambda where the attributes have identical keys but map different types" do
+        before { klass.map "attribute", "attribute", ->(v) { v.split('') }, ->(v) { v.join('') } }
+
+        context "with attributes matching the left key" do
+          it "maps the left key to the right key, using the first lambda to map the value" do
+            klass.new("attribute" => "Va").mapped_attributes["attribute"].should == ['V', 'a']
+          end
+
+          it "maps the right key to the left key, using the second lambda to map the value" do
+            klass.new("attribute" => ["V", "a"]).unmapped_attributes["attribute"].should == "Va"
+          end
+        end
       end
     end
 
