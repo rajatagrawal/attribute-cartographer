@@ -59,6 +59,10 @@ describe AttributeCartographer do
         it "creates an entry in mapped_attributes matching the key name" do
           klass.new("Attribute" => "Value").mapped_attributes["Attribute"].should == "Value"
         end
+
+        it "creates an entry in unmapped_attributes matching the key name" do
+          klass.new("Attribute" => "Value").unmapped_attributes["Attribute"].should == "Value"
+        end
       end
 
       context "and a 1-arity lambda" do

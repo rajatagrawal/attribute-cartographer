@@ -14,7 +14,6 @@ module AttributeCartographer
       @unmapper ||= {}
 
       (from, to), (f1, f2) = args.partition { |a| !(Proc === a) }
-
       passthrough = ->(v) { v }
       f1 ||= passthrough
       f2 ||= passthrough
@@ -22,13 +21,15 @@ module AttributeCartographer
       if Array === from
         if f1.arity == 1
           from.each { |k| @mapper[k] = [k, f1] }
+          from.each { |k| @unmapper[k] = [k, f1] }
         else
           from.each { |k| @mapper[k] = f1 }
+          from.each { |k| @unmapper[k] = f1 }
         end
       else
         raise AttributeCartographer::InvalidArgumentError if to && f1.arity == 2
-
-        @mapper[from] = (f1.arity == 1 ? [to || from, f1] : f1)
+        to ||= from
+        @mapper[from] = (f1.arity == 1 ? [to, f1] : f1)
         @unmapper[to] = [from, f2] if to && (f1 == f2 || f2 != passthrough)
       end
     end
