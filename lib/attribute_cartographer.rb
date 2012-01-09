@@ -43,7 +43,7 @@ module AttributeCartographer
 
       map_attributes! attributes
 
-      super
+      super()
     end
 
     def original_attributes
