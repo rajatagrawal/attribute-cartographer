@@ -1,15 +1,11 @@
 require 'spec_helper'
 
 describe AttributeCartographer do
-  after(:each) do
-    TestClass.instance_variable_set :@mapper, nil
-  end
-
-  let(:klass) {
-    class TestClass
+  let(:klass) do
+    Class.new do
       include AttributeCartographer
     end
-  }
+  end
 
   describe "#initialize" do
 
