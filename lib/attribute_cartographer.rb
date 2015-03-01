@@ -10,6 +10,7 @@ module AttributeCartographer
 
   module ClassMethods
     def map *args
+      require 'pry'; binding.pry
       @mapper ||= {}
       @unmapper ||= {}
 
@@ -28,6 +29,7 @@ module AttributeCartographer
         end
       else
         raise AttributeCartographer::InvalidArgumentError if to && f1.arity == 2
+        binding.pry
         to ||= from
         @mapper[from] = (f1.arity == 1 ? [to, f1] : f1)
         @unmapper[to] = [from, f2] if to && (f1 == f2 || f2 != passthrough)
